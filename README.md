@@ -34,8 +34,6 @@ El repositorio sigue la organización solicitada por la cátedra:
 ```text
 tp_integrador/
 ├── README.md                          # Presentación general del proyecto
-├── scripts/
-│   └── ingesta_automatica.py          # ¡Pipeline de ingesta en vivo!
 ├── docs/                              # Documentación técnica y diagramas
 │   ├── informe.pdf                    # Informe técnico completo
 │   ├── modelo_conceptual.png          # Diagrama Entidad-Relación (DER)
@@ -58,6 +56,10 @@ tp_integrador/
 │   │   └── 03_indices.sql             # Índices vectoriales HNSW, GIN y B-Tree
 │   └── consultas/
 │       └── 04_consultas.sql           # 5 consultas representativas de evaluación
+├── vectorial/
+│   └── 01_vector_setup.sql            # Funciones y operadores de búsqueda vectorial
+├── scripts/
+│   └── ingesta_automatica.py          # ¡Pipeline de ingesta en vivo!
 └── anexos/
     └── material_complementario.md
 
@@ -68,6 +70,7 @@ tp_integrador/
 ### Requisitos Previos
 * PostgreSQL v15 o superior instalado.
 * Extensión `pgvector` instalada en el motor de base de datos.
+* Python 3.10+ (para el pipeline de ingesta automática).
 
 ### Pasos para Replicar el Entorno
 
@@ -92,10 +95,28 @@ tp_integrador/
 
 ---
 
-## 🔄 Pipeline de Ingesta Automática
-El proyecto incluye un monitor en tiempo real (`scripts/ingesta_automatica.py`). 
-Al ejecutarlo, cualquier archivo `.pdf` depositado en `data/ejemplos/archivos_fuente/` es detectado, procesado, fragmentado y registrado automáticamente en PostgreSQL con su correspondiente vector.
+## 🔄 Guía Paso a Paso para la Ingesta Automática
 
+El repositorio incluye un servicio de monitoreo en tiempo real (`scripts/ingesta_automatica.py`) que automatiza todo el proceso de extracción, *chunking* y registro en PostgreSQL/pgvector.
+
+### Pasos para Ejecutar el Pipeline en Vivo
+
+1. **Instalar las dependencias de Python necesarias:**
+   `pip install psycopg2-binary pypdf watchdog langchain-text-splitters`
+
+2. **Configurar las credenciales de la base de datos:**
+   Abrir el archivo `scripts/ingesta_automatica.py` y verificar que el diccionario `DB_CONFIG` tenga tu usuario, contraseña y puerto de PostgreSQL.
+
+3. **Iniciar el monitor de archivos:**
+   `python scripts/ingesta_automatica.py`  
+   *(En la consola se observará el mensaje: `Escuchando la carpeta 'data/ejemplos/archivos_fuente/'...`)*
+
+4. **Probar la ingesta:**
+   Copiar o arrastrar cualquier archivo `.pdf` nuevo dentro de la carpeta `data/ejemplos/archivos_fuente/`.
+
+5. **Verificación:**
+   El script detectará automáticamente el PDF, extraerá el texto, dividirá el contenido en fragmentos de 500 caracteres, generará los vectores y registrará las filas correspondientes en las tablas `documentos`, `versiones_documento` y `fragmentos`.
+   
 ---
 
 ## 🛠️ Consultas Incluidas en la Evaluación
