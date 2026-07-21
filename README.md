@@ -1,6 +1,8 @@
 # Sistema RAG para Consulta de Documentación Técnica
+
 **Trabajo Práctico Integrador - Bases de Datos para Inteligencia Artificial**  
-**Docente:** Martín Lacheski | **Año:** 2026  
+**Docente:** Martín Lacheski  
+**Año:** 2026  
 
 ---
 
@@ -12,21 +14,47 @@
 ---
 
 ## 📌 Resumen del Proyecto
-El proyecto diseña la capa de datos para un sistema de **Generación Aumentada por Recuperación (RAG)** que permite procesar, vectorizar y consultar documentación técnica interna (manuales, normas, instructivos) mediante un modelo de lenguaje (LLM). 
+Este proyecto consiste en el diseño e implementación de la capa de datos para un sistema de **Generación Aumentada por Recuperación (RAG - *Retrieval-Augmented Generation*)**. La solución permite ingestar, organizar, fragmentar (*chunking*) y vectorizar documentación técnica interna (manuales de procedimiento, normas de seguridad e instructivos operativos) para ser consultada mediante Inteligencia Artificial (LLM) en lenguaje natural.
 
-La solución implementa una **arquitectura híbrida unificada** en **PostgreSQL con pgvector**, garantizando el filtrado relacional de permisos por área, control de vigencia y trazabilidad de las fuentes utilizadas en cada respuesta.
+La arquitectura de datos implementa una **solución híbrida unificada utilizando PostgreSQL y la extensión `pgvector`**, lo que permite combinar la búsqueda vectorial semántica de baja latencia con el control relacional estricto de accesos por área, control de vigencia documental y trazabilidad completa de las fuentes utilizadas en cada respuesta.
+
+---
+
+## 🏗️ Alcance y Decisiones de Diseño Clave
+* **Unificación Tecnológica (PostgreSQL + pgvector):** Evita la complejidad operacional de sincronizar dos bases de datos independientes (relacional + vectorial), permitiendo ejecutar la búsqueda por distancia coseno y los filtros relacionales en una sola consulta atómica.
+* **Seguridad y Aislamiento por Área:** Implementación de filtrado obligatorio (`WHERE area_id = ...` / Row Level Security) para evitar la filtración de información confidencial entre áreas o roles.
+* **Trazabilidad M:N (Auditoría RAG):** Registro explícito de la relación entre cada consulta realizada por el usuario, la respuesta de la IA y los fragmentos (*chunks*) y versiones exactas de los documentos fuente recuperados.
+* **Manejo de Metadatos Semiestructurados:** Uso del tipo de dato `JSONB` para indexar metadatos cambiantes de cada fragmento (página de PDF, párrafo, sección) mediante índices GIN.
 
 ---
 
 ## 📂 Estructura del Repositorio
-* `docs/`: Informe técnico en PDF, diagrama entidad-relación y arquitectura general.
-* `data/ejemplos/`: Ejemplos JSON de documentos, fragmentos y archivos PDF fuente reales (`data/ejemplos/archivos_fuente/`).
-* `db/`: Scripts DDL de creación de tablas, populación de datos (seed), índices y consultas representativas.
+El repositorio sigue la organización solicitada por la cátedra:
 
----
-
-## 🚀 Guía de Ejecución Rápida
-1. Asegurarse de tener instalado PostgreSQL 15+ con la extensión `pgvector`.
-2. Ejecutar la creación del esquema:
-   ```bash
-   psql -U usuario -d mibase -f db/estructura/01_schema.sql
+```text
+tp_integrador/
+├── README.md                          # Presentación general del proyecto
+├── docs/                              # Documentación técnica y diagramas
+│   ├── informe.pdf                    # Informe técnico completo
+│   ├── modelo_conceptual.png          # Diagrama Entidad-Relación (DER)
+│   └── arquitectura.png               # Diagrama de arquitectura de datos
+├── data/
+│   └── ejemplos/                      # Datos estructurados en JSON y archivos fuente
+│       ├── documentos.json
+│       ├── fragmentos.json
+│       ├── consultas.json
+│       └── archivos_fuente/           # Documentos PDF reales de prueba
+│           ├── MN-TURB-001.pdf
+│           ├── NR-SEG-015.pdf
+│           └── IT-ELEC-042.pdf
+├── db/                                # Implementación relacional y vectorial en SQL
+│   ├── estructura/
+│   │   └── 01_schema.sql              # Creación de tablas, FKs y extensión pgvector
+│   ├── datos/
+│   │   └── 02_seed.sql                # Populación de datos de prueba (Seed)
+│   ├── indices_vistas/
+│   │   └── 03_indices.sql             # Índices vectoriales HNSW, GIN y B-Tree
+│   └── consultas/
+│       └── 04_consultas.sql           # 5 consultas representativas de evaluación
+└── anexos/
+    └── material_complementario.md
