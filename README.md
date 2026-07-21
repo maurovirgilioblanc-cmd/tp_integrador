@@ -70,7 +70,7 @@ tp_integrador/
 ### Pasos para Replicar el Entorno
 
 1. **Clonar el repositorio:**
-   git clone https://github.com/tu-usuario/tp_integrador.git
+   git clone https://github.com/maurovirgilioblanc-cmd/tp_integrador.git
    cd tp_integrador
 
 2. **Crear y preparar la base de datos:**
