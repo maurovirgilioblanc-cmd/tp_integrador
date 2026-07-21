@@ -34,6 +34,8 @@ El repositorio sigue la organización solicitada por la cátedra:
 ```text
 tp_integrador/
 ├── README.md                          # Presentación general del proyecto
+├── scripts/
+│   └── ingesta_automatica.py          # ¡Pipeline de ingesta en vivo!
 ├── docs/                              # Documentación técnica y diagramas
 │   ├── informe.pdf                    # Informe técnico completo
 │   ├── modelo_conceptual.png          # Diagrama Entidad-Relación (DER)
