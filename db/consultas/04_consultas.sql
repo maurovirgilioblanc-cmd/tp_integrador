@@ -48,13 +48,13 @@ ORDER BY c.fecha_hora DESC;
 SELECT 
     d.documento_id,
     d.titulo AS documento_titulo,
-    COUNT(fc.fuente_id) AS total_citas
+    COUNT(fc.consulta_id) AS total_citas
 FROM consultas_rag c
 JOIN fuentes_consulta fc ON c.consulta_id = fc.consulta_id
 JOIN fragmentos f ON fc.fragmento_id = f.fragmento_id
 JOIN versiones_documento v ON f.version_id = v.version_id
 JOIN documentos d ON v.documento_id = d.documento_id
-WHERE c.fecha_consulta >= CURRENT_DATE - INTERVAL '30 days'
+WHERE c.fecha_hora >= CURRENT_DATE - INTERVAL '30 days'
 GROUP BY d.documento_id, d.titulo
 ORDER BY total_citas DESC;
 
