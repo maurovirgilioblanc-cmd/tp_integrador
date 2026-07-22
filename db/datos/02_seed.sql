@@ -33,3 +33,39 @@ INSERT INTO fragmentos (version_id, numero_secuencia, contenido_texto, metadatos
 (1, 2, 'El cambio de filtros de aceite de la caja reductora debe realizarse cada 1.500 horas de operación continua o cada 6 meses, lo que ocurra primero.', '{"seccion": "5", "pagina_pdf": 1}'),
 (2, 1, 'Es obligatorio el uso de casco de protección auditiva de doble copa (mínimo 28 dB de atenuación) para todo personal que ingrese a la sala de compresores y turbinas.', '{"seccion": "1", "pagina_pdf": 1}'),
 (3, 1, 'Antes de intervenir cualquier interruptor principal de media tensión, se debe aplicar el candado personal de bloqueo y verificar la ausencia de tensión con un multímetro calibrado.', '{"seccion": "2", "pagina_pdf": 1}');
+
+-- ==============================================================================
+-- INSERTAR DATOS SIMULADOS DE PRUEBA (CONSULTAS Y FUENTES)
+-- ==============================================================================
+-- 1. Insertar una consulta de ejemplo realizada por el usuario 1
+INSERT INTO consultas_rag (usuario_id, pregunta_texto, respuesta_ia, fecha_hora)
+VALUES (
+    1, 
+    '¿Cuál es el procedimiento para la ingesta de documentos?', 
+    'El procedimiento se realiza de forma automática mediante el script de monitoreo en Python.',
+    NOW() - INTERVAL '2 days'
+)
+RETURNING consulta_id;
+
+-- NOTA: Asumimos que la consulta anterior generó el consulta_id = 1.
+-- Si tu ID es diferente, ajustalo en los siguientes INSERTs.
+
+-- 2. Vincular la consulta con los fragmentos cargados por la ingesta automática
+INSERT INTO fuentes_consulta (consulta_id, fragmento_id, score_similitud)
+VALUES 
+    (1, (SELECT fragmento_id FROM fragmentos LIMIT 1 OFFSET 0), 0.8924),
+    (1, (SELECT fragmento_id FROM fragmentos LIMIT 1 OFFSET 1), 0.7612);
+
+-- 3. Insertar una segunda consulta para probar las métricas de los últimos 30 días
+INSERT INTO consultas_rag (usuario_id, pregunta_texto, respuesta_ia, fecha_hora)
+VALUES (
+    1, 
+    '¿Cómo se configuran los vectores en PostgreSQL?', 
+    'Se requiere la extensión pgvector y definir la columna como tipo vector(1536).',
+    NOW() - INTERVAL '5 days'
+);
+
+INSERT INTO fuentes_consulta (consulta_id, fragmento_id, score_similitud)
+VALUES 
+    (2, (SELECT fragmento_id FROM fragmentos LIMIT 1 OFFSET 0), 0.9310);
+
