@@ -1,0 +1,17 @@
+# --- Base de datos y Monitor de archivos ---
+psycopg2-binary>=2.9.9
+watchdog>=3.0.0
+
+# --- Procesamiento de documentos ---
+pypdf>=4.0.0
+langchain-text-splitters>=0.0.1
+
+# --- Integración con LangChain y HuggingFace ---
+langchain-core>=0.2.0
+langchain-huggingface>=0.0.1
+
+# --- Ejecución del modelo de embeddings (Nomic v1.5) ---
+sentence-transformers>=2.6.0
+transformers>=4.39.0
+torch>=2.2.0
+einops>=0.7.0
